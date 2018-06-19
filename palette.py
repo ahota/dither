@@ -3,6 +3,22 @@ from collections import OrderedDict
 palettes = OrderedDict()
 available_palettes = []
 
+def _build_websafe_palettes():
+    # note that there is only an _accepted_ set of 216 "websafe" colors, but
+    # there is no fully standardized set
+    # this is using the common set of 216 6-bit colors
+
+    global palettes
+
+    print 'building websafe palette'
+
+    palette = []
+    for r in range(6):
+        for g in range(6):
+            for b in range(6):
+                palette.append([r/5.0, g/5.0, b/5.0])
+    palettes['websafe'] = palette
+
 def _build_grayscale_palettes():
     global palettes
 
@@ -102,6 +118,7 @@ def _build_palettes():
     _build_grayscale_palettes()
     _build_cga_palettes()
     _build_ega_palettes()
+    _build_websafe_palettes()
 
     global available_palettes
     available_palettes = palettes.keys()
