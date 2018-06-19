@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import json,os
 
 palettes = OrderedDict()
 available_palettes = []
@@ -120,10 +121,31 @@ def _build_palettes():
     _build_ega_palettes()
     _build_websafe_palettes()
 
+    global palettes
+
+    with open('palettes.cache', 'w') as pf:
+        json.dump(palettes, pf)
+
     global available_palettes
     available_palettes = palettes.keys()
 
-_build_palettes()
+# check if a palette file exists
+if os.access('palettes.cache', os.R_OK):
+    # check its mtime
+    me = os.path.realpath(__file__)
+    my_mtime = os.stat(me).st_mtime
+    cache_mtime = os.stat('palettes.cache').st_mtime
+
+    if my_mtime > cache_mtime:
+        # rebuild cache
+        _build_palettes()
+    else:
+        # read in the cache
+        with open('palettes.cache', 'r') as pf:
+            palettes = json.load(pf)
+        available_palettes = palettes.keys()
+else:
+    _build_palettes()
 
 if __name__ == '__main__':
     print available_palettes
