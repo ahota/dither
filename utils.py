@@ -19,6 +19,10 @@ def numpy2pil(matrix):
     return image
 
 
+def clamp(val):
+    return max(0.0, min(1.0, val))
+
+
 def closest_palette_color(value, palette_name, bit_depth=1):
     if DEBUGMODE:
         print '\tvalue = {}'.format(value)
