@@ -8,8 +8,7 @@ import utils
 DEBUGMODE = False
 default_palette = 'cga_mode_4_2_hi'
 
-# floyd-steinberg
-def dither(image_matrix, palette_name):
+def floyd_steinberg(image_matrix, palette_name):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
     for y in range(rows):
@@ -58,7 +57,7 @@ if __name__ == '__main__':
     image = utils.open_image(args.image_filename)
     image_matrix = utils.pil2numpy(image)
 
-    dither_matrix = dither(image_matrix, args.palette)
+    dither_matrix = floyd_steinberg(image_matrix, args.palette)
     dither_image = utils.numpy2pil(dither_matrix)
 
     dither_image.show()
