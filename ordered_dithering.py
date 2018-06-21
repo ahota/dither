@@ -9,14 +9,25 @@ import utils
 DEBUGMODE = False
 default_palette = 'cga_mode_4_2_hi'
 
-bayer4x4map = 1./17. * numpy.array([
+_bayer4x4map = 1./17. * numpy.array([
     [ 1,  9,  3, 11],
     [13,  5, 15,  7],
     [ 4, 12,  2, 10],
     [16,  8, 14,  6]
 ])
 
-def bayer4x4(image_matrix, palette_name):
+_bayer8x8map = 1./65. * numpy.array([
+    [ 0, 48, 12, 60,  3, 51, 15, 63],
+    [32, 16, 44, 28, 35, 19, 47, 31],
+    [ 8, 56,  4, 52, 11, 59,  7, 55],
+    [40, 24, 36, 20, 43, 27, 39, 23],
+    [ 2, 50, 14, 62,  1, 49, 13, 61],
+    [34, 18, 46, 30, 33, 17, 45, 29],
+    [10, 58,  6, 54,  9, 57,  5, 53],
+    [42, 26, 38, 22, 41, 25, 37, 21]
+])
+
+def _bayer(image_matrix, palette_name, size):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
     for y in range(rows):
@@ -26,11 +37,27 @@ def bayer4x4(image_matrix, palette_name):
                 print 'old = {}'.format(new_matrix[x][y])
 
             old_pixel = numpy.array(new_matrix[x][y], dtype=numpy.float)
-            old_pixel += old_pixel * bayer4x4map[x % 4][y % 4]
+            if size == 4:
+                old_pixel += old_pixel * _bayer4x4map[x % 4][y % 4]
+            elif size == 8:
+                old_pixel += old_pixel * _bayer8x8map[x % 8][y % 8]
+            else:
+                pass
             new_pixel = numpy.array(utils.closest_palette_color(old_pixel,
                 palette_name), dtype=numpy.float)
             new_matrix[x][y] = new_pixel
     return new_matrix
+
+def bayer4x4(image_matrix, palette_name):
+    return _bayer(image_matrix, palette_name, 4)
+
+def bayer8x8(image_matrix, palette_name):
+    return _bayer(image_matrix, palette_name, 8)
+
+_available_methods = {
+        'bayer4x4' : bayer4x4,
+        'bayer8x8' : bayer8x8
+}
 
 if __name__ == '__main__':
     import argparse
@@ -45,7 +72,7 @@ if __name__ == '__main__':
     image = utils.open_image(args.image_filename)
     image_matrix = utils.pil2numpy(image)
 
-    dither_matrix = bayer4x4(image_matrix, args.palette)
+    dither_matrix = bayer8x8(image_matrix, args.palette)
     dither_image = utils.numpy2pil(dither_matrix)
 
     dither_image.show()
