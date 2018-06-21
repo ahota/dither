@@ -29,6 +29,10 @@ def randomized(image_matrix, palette_name):
             new_matrix[x][y] = new_pixel
     return new_matrix
 
+_available_methods = {
+        'random' : randomized
+}
+
 if __name__ == '__main__':
     import argparse
 

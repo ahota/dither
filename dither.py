@@ -17,6 +17,8 @@ default_palette = 'cga_mode4_2_high'
 available_methods = {}
 
 available_methods.update(ordered_dithering._available_methods)
+available_methods.update(randomized._available_methods)
+available_methods.update(error_diffusion._available_methods)
 
 if __name__ == '__main__':
     import argparse

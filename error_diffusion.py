@@ -43,6 +43,9 @@ def floyd_steinberg(image_matrix, palette_name):
                 new_matrix[x + 1][y + 1] = new_matrix[x + 1][y + 1] + quant_error * 1. / 16
     return new_matrix
 
+_available_methods = {
+        'floyd_steinberg' : floyd_steinberg
+}
 
 if __name__ == '__main__':
     import argparse
