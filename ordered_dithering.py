@@ -27,6 +27,13 @@ _bayer8x8map = 1./65. * numpy.array([
     [42, 26, 38, 22, 41, 25, 37, 21]
 ])
 
+_clusterdot4x4map = 1./15. * numpy.array([
+    [12,  5,  6, 13],
+    [ 4,  0,  1,  7],
+    [11,  3,  2,  8],
+    [15, 10,  9, 14]
+])
+
 def _bayer(image_matrix, palette_name, size):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
@@ -54,9 +61,34 @@ def bayer4x4(image_matrix, palette_name):
 def bayer8x8(image_matrix, palette_name):
     return _bayer(image_matrix, palette_name, 8)
 
+def _cluster_dot(image_matrix, palette_name, size):
+    new_matrix = numpy.copy(image_matrix)
+    cols, rows, depth = image_matrix.shape
+    for y in range(rows):
+        for x in range(cols):
+            if DEBUGMODE:
+                print '<{}, {}>'.format(x, y)
+                print 'old = {}'.format(new_matrix[x][y])
+
+            old_pixel = numpy.array(new_matrix[x][y], dtype=numpy.float)
+            if size == 4:
+                old_pixel += old_pixel * _clusterdot4x4map[x % 4][y % 4]
+            elif size == 8:
+                pass #old_pixel += old_pixel * _bayer8x8map[x % 8][y % 8]
+            else:
+                pass
+            new_pixel = numpy.array(utils.closest_palette_color(old_pixel,
+                palette_name), dtype=numpy.float)
+            new_matrix[x][y] = new_pixel
+    return new_matrix
+
+def cluster_dot4x4(image_matrix, palette_name):
+    return _cluster_dot(image_matrix, palette_name, 4)
+
 _available_methods = {
         'bayer4x4' : bayer4x4,
-        'bayer8x8' : bayer8x8
+        'bayer8x8' : bayer8x8,
+        'cluster4x4' : cluster_dot4x4
 }
 
 if __name__ == '__main__':
