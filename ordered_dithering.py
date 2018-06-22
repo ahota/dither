@@ -45,7 +45,8 @@ _clusterdot8x8map = 1./64. * numpy.array([
     [32, 40, 54, 38, 31, 21, 19, 29]
 ])
 
-def _bayer(image_matrix, palette_name, size):
+def _ordered_dither(image_matrix, palette_name, map_to_use):
+    map_size = map_to_use.shape[0]
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
     for y in range(rows):
@@ -55,49 +56,23 @@ def _bayer(image_matrix, palette_name, size):
                 print 'old = {}'.format(new_matrix[x][y])
 
             old_pixel = numpy.array(new_matrix[x][y], dtype=numpy.float)
-            if size == 4:
-                old_pixel += old_pixel * _bayer4x4map[x % 4][y % 4]
-            elif size == 8:
-                old_pixel += old_pixel * _bayer8x8map[x % 8][y % 8]
-            else:
-                pass
+            old_pixel += old_pixel * map_to_use[x % map_size][y % map_size]
             new_pixel = numpy.array(utils.closest_palette_color(old_pixel,
                 palette_name), dtype=numpy.float)
             new_matrix[x][y] = new_pixel
     return new_matrix
 
 def bayer4x4(image_matrix, palette_name):
-    return _bayer(image_matrix, palette_name, 4)
+    return _ordered_dither(image_matrix, palette_name, _bayer4x4map)
 
 def bayer8x8(image_matrix, palette_name):
-    return _bayer(image_matrix, palette_name, 8)
-
-def _cluster_dot(image_matrix, palette_name, size):
-    new_matrix = numpy.copy(image_matrix)
-    cols, rows, depth = image_matrix.shape
-    for y in range(rows):
-        for x in range(cols):
-            if DEBUGMODE:
-                print '<{}, {}>'.format(x, y)
-                print 'old = {}'.format(new_matrix[x][y])
-
-            old_pixel = numpy.array(new_matrix[x][y], dtype=numpy.float)
-            if size == 4:
-                old_pixel += old_pixel * _clusterdot4x4map[x % 4][y % 4]
-            elif size == 8:
-                old_pixel += old_pixel * _clusterdot8x8map[x % 8][y % 8]
-            else:
-                pass
-            new_pixel = numpy.array(utils.closest_palette_color(old_pixel,
-                palette_name), dtype=numpy.float)
-            new_matrix[x][y] = new_pixel
-    return new_matrix
+    return _ordered_dither(image_matrix, palette_name, _bayer8x8map)
 
 def cluster_dot4x4(image_matrix, palette_name):
-    return _cluster_dot(image_matrix, palette_name, 4)
+    return _ordered_dither(image_matrix, palette_name, _clusterdot4x4map)
 
 def cluster_dot8x8(image_matrix, palette_name):
-    return _cluster_dot(image_matrix, palette_name, 8)
+    return _ordered_dither(image_matrix, palette_name, _clusterdot8x8map)
 
 _available_methods = {
         'bayer4x4' : bayer4x4,
