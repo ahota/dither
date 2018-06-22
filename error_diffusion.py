@@ -8,6 +8,57 @@ import utils
 DEBUGMODE = False
 default_palette = 'cga_mode_4_2_hi'
 
+def jajuni(image_matrix, palette_name):
+    new_matrix = numpy.copy(image_matrix)
+    cols, rows, depth = image_matrix.shape
+    for y in range(rows):
+        for x in range(cols):
+            if DEBUGMODE:
+                print '<{}, {}>'.format(x, y)
+                print 'old = {}'.format(new_matrix[x][y])
+
+            # calculate the new pixel value
+            old_pixel = numpy.array(new_matrix[x][y], dtype=numpy.float)
+            new_pixel = numpy.array(utils.closest_palette_color(old_pixel,
+                palette_name), dtype=numpy.float)
+            # replace the old pixel with the new value, and quantify the error
+            new_matrix[x][y] = new_pixel
+            quant_error = old_pixel - new_pixel
+
+            if DEBUGMODE:
+                print 'new = {}'.format(new_pixel)
+                print 'quant = {}'.format(quant_error)
+                print '-'*20
+                if x > 5:
+                    sys.exit()
+
+            # distribute the error forward into the surrounding pixels
+            if x + 1 < cols:
+                new_matrix[x + 1][y    ] = new_matrix[x + 1][y    ] + quant_error * 7. / 48
+            if x + 2 < cols:
+                new_matrix[x + 2][y    ] = new_matrix[x + 2][y    ] + quant_error * 5. / 48
+            if y + 1 < rows:
+                if x - 2 >= 0:
+                    new_matrix[x - 2][y + 1] = new_matrix[x - 2][y + 1] + quant_error * 1. / 16
+                if x - 1 >= 0:
+                    new_matrix[x - 1][y + 1] = new_matrix[x - 1][y + 1] + quant_error * 5. / 48
+                new_matrix[x    ][y + 1] = new_matrix[x    ][y + 1] + quant_error * 7. / 48
+                if x + 1 < rows:
+                    new_matrix[x + 1][y + 1] = new_matrix[x + 1][y + 1] + quant_error * 5. / 48
+                if x + 2 < rows:
+                    new_matrix[x + 2][y + 1] = new_matrix[x + 2][y + 1] + quant_error * 1. / 16
+            if y + 2 < rows:
+                if x - 2 >= 0:
+                    new_matrix[x - 2][y + 2] = new_matrix[x - 2][y + 2] + quant_error * 1. / 48
+                if x - 1 >= 0:
+                    new_matrix[x - 1][y + 2] = new_matrix[x - 1][y + 2] + quant_error * 1. / 16
+                new_matrix[x    ][y + 2] = new_matrix[x    ][y + 2] + quant_error * 5. / 48
+                if x + 1 < rows:
+                    new_matrix[x + 1][y + 2] = new_matrix[x + 1][y + 2] + quant_error * 1. / 16
+                if x + 2 < rows:
+                    new_matrix[x + 2][y + 2] = new_matrix[x + 2][y + 2] + quant_error * 1. / 48
+    return new_matrix
+
 def floyd_steinberg(image_matrix, palette_name):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
@@ -44,7 +95,8 @@ def floyd_steinberg(image_matrix, palette_name):
     return new_matrix
 
 _available_methods = {
-        'floyd_steinberg' : floyd_steinberg
+        'floyd_steinberg' : floyd_steinberg,
+        'jajuni' : jajuni,
 }
 
 if __name__ == '__main__':
