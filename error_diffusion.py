@@ -8,7 +8,18 @@ import utils
 DEBUGMODE = False
 default_palette = 'cga_mode_4_2_hi'
 
-def jajuni(image_matrix, palette_name):
+_floyd_steinberg_diffusion_matrix = numpy.array([
+    [7./16],
+    [3./16,5./16,1./16]
+])
+
+_jajuni_diffusion_matrix = numpy.array([
+    [7./48,5./48],
+    [1./16,5./48,7./48,5./48,1./16],
+    [1./48,1./16,5./48,1./16,1./48]
+])
+
+def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
     for y in range(rows):
@@ -32,67 +43,23 @@ def jajuni(image_matrix, palette_name):
                 if x > 5:
                     sys.exit()
 
-            # distribute the error forward into the surrounding pixels
-            if x + 1 < cols:
-                new_matrix[x + 1][y    ] = new_matrix[x + 1][y    ] + quant_error * 7. / 48
-            if x + 2 < cols:
-                new_matrix[x + 2][y    ] = new_matrix[x + 2][y    ] + quant_error * 5. / 48
-            if y + 1 < rows:
-                if x - 2 >= 0:
-                    new_matrix[x - 2][y + 1] = new_matrix[x - 2][y + 1] + quant_error * 1. / 16
-                if x - 1 >= 0:
-                    new_matrix[x - 1][y + 1] = new_matrix[x - 1][y + 1] + quant_error * 5. / 48
-                new_matrix[x    ][y + 1] = new_matrix[x    ][y + 1] + quant_error * 7. / 48
-                if x + 1 < rows:
-                    new_matrix[x + 1][y + 1] = new_matrix[x + 1][y + 1] + quant_error * 5. / 48
-                if x + 2 < rows:
-                    new_matrix[x + 2][y + 1] = new_matrix[x + 2][y + 1] + quant_error * 1. / 16
-            if y + 2 < rows:
-                if x - 2 >= 0:
-                    new_matrix[x - 2][y + 2] = new_matrix[x - 2][y + 2] + quant_error * 1. / 48
-                if x - 1 >= 0:
-                    new_matrix[x - 1][y + 2] = new_matrix[x - 1][y + 2] + quant_error * 1. / 16
-                new_matrix[x    ][y + 2] = new_matrix[x    ][y + 2] + quant_error * 5. / 48
-                if x + 1 < rows:
-                    new_matrix[x + 1][y + 2] = new_matrix[x + 1][y + 2] + quant_error * 1. / 16
-                if x + 2 < rows:
-                    new_matrix[x + 2][y + 2] = new_matrix[x + 2][y + 2] + quant_error * 1. / 48
+            forward_diffusion = diffusion_matrix[0]
+            for ci, coeff in enumerate(forward_diffusion):
+                if x + ci + 1 < cols:
+                    new_matrix[x + (ci + 1)][y] += quant_error * coeff
+            for di, downward_diffusion in enumerate(diffusion_matrix[1:]):
+                if y + di + 1 < rows:
+                    offset = len(downward_diffusion) / 2
+                    for ci, coeff in enumerate(downward_diffusion):
+                        if 0 <= x + ci - offset < cols:
+                            new_matrix[x + ci - offset][y + di + 1] += quant_error * coeff
     return new_matrix
 
 def floyd_steinberg(image_matrix, palette_name):
-    new_matrix = numpy.copy(image_matrix)
-    cols, rows, depth = image_matrix.shape
-    for y in range(rows):
-        for x in range(cols):
-            if DEBUGMODE:
-                print '<{}, {}>'.format(x, y)
-                print 'old = {}'.format(new_matrix[x][y])
+    return _error_diffusion(image_matrix, palette_name, _floyd_steinberg_diffusion_matrix)
 
-            # calculate the new pixel value
-            old_pixel = numpy.array(new_matrix[x][y], dtype=numpy.float)
-            new_pixel = numpy.array(utils.closest_palette_color(old_pixel,
-                palette_name), dtype=numpy.float)
-            # replace the old pixel with the new value, and quantify the error
-            new_matrix[x][y] = new_pixel
-            quant_error = old_pixel - new_pixel
-
-            if DEBUGMODE:
-                print 'new = {}'.format(new_pixel)
-                print 'quant = {}'.format(quant_error)
-                print '-'*20
-                if x > 5:
-                    sys.exit()
-
-            # distribute the error forward into the surrounding pixels
-            if x + 1 < cols:
-                new_matrix[x + 1][y    ] = new_matrix[x + 1][y    ] + quant_error * 7. / 16
-            if x - 1 >= 0 and y + 1 < rows:
-                new_matrix[x - 1][y + 1] = new_matrix[x - 1][y + 1] + quant_error * 3. / 16
-            if y + 1 < rows:
-                new_matrix[x    ][y + 1] = new_matrix[x    ][y + 1] + quant_error * 5. / 16
-            if x + 1 < cols and y + 1 < rows:
-                new_matrix[x + 1][y + 1] = new_matrix[x + 1][y + 1] + quant_error * 1. / 16
-    return new_matrix
+def jajuni(image_matrix, palette_name):
+    return _error_diffusion(image_matrix, palette_name, _jajuni_diffusion_matrix)
 
 _available_methods = {
         'floyd_steinberg' : floyd_steinberg,
