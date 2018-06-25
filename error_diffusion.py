@@ -19,6 +19,12 @@ _jajuni_diffusion_matrix = numpy.array([
     [1./48,1./16,5./48,1./16,1./48]
 ])
 
+# zeros are used to pad asymmetric downward diffusion rows
+_fan_diffusion_matrix = numpy.array([
+    [7./16],
+    [1./16,3./16,5./16,0.,0.]
+])
+
 def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
@@ -61,9 +67,13 @@ def floyd_steinberg(image_matrix, palette_name):
 def jajuni(image_matrix, palette_name):
     return _error_diffusion(image_matrix, palette_name, _jajuni_diffusion_matrix)
 
+def fan(image_matrix, palette_name):
+    return _error_diffusion(image_matrix, palette_name, _fan_diffusion_matrix)
+
 _available_methods = {
         'floyd_steinberg' : floyd_steinberg,
         'jajuni' : jajuni,
+        'fan' : fan,
 }
 
 if __name__ == '__main__':
