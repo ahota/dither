@@ -25,6 +25,17 @@ _fan_diffusion_matrix = numpy.array([
     [1./16,3./16,5./16,0.,0.]
 ])
 
+_stucki_diffusion_matrix = numpy.array([
+    [4./21,2./21],
+    [1./21,2./21,4./21,2./21,1./21],
+    [1./42,1./21,2./21,1./21,1./42]
+])
+
+_burkes_diffusion_matrix = numpy.array([
+    [.25,.125],
+    [.0625,.125,.25,.125,.0625]
+])
+
 def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
@@ -70,10 +81,18 @@ def jajuni(image_matrix, palette_name):
 def fan(image_matrix, palette_name):
     return _error_diffusion(image_matrix, palette_name, _fan_diffusion_matrix)
 
+def stucki(image_matrix, palette_name):
+    return _error_diffusion(image_matrix, palette_name, _stucki_diffusion_matrix)
+
+def burkes(image_matrix, palette_name):
+    return _error_diffusion(image_matrix, palette_name, _burkes_diffusion_matrix)
+
 _available_methods = {
         'floyd_steinberg' : floyd_steinberg,
         'jajuni' : jajuni,
         'fan' : fan,
+        'stucki' : stucki,
+        'burkes' : burkes,
 }
 
 if __name__ == '__main__':
