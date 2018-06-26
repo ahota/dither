@@ -170,7 +170,7 @@ if os.access('palettes.cache', os.R_OK):
     else:
         # read in the cache
         with open('palettes.cache', 'r') as pf:
-            palettes = json.load(pf)
+            palettes = json.load(pf, object_pairs_hook=OrderedDict)
         available_palettes = palettes.keys()
 else:
     _build_palettes()
