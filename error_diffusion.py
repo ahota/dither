@@ -1,4 +1,5 @@
 from PIL import Image
+from collections import OrderedDict
 import numpy
 import sys
 
@@ -87,13 +88,13 @@ def stucki(image_matrix, palette_name):
 def burkes(image_matrix, palette_name):
     return _error_diffusion(image_matrix, palette_name, _burkes_diffusion_matrix)
 
-_available_methods = {
-        'floyd_steinberg' : floyd_steinberg,
-        'jajuni' : jajuni,
-        'fan' : fan,
-        'stucki' : stucki,
-        'burkes' : burkes,
-}
+_available_methods = OrderedDict([
+        ('floyd_steinberg' , floyd_steinberg),
+        ('jajuni' , jajuni),
+        ('fan' , fan),
+        ('stucki' , stucki),
+        ('burkes' , burkes),
+])
 
 if __name__ == '__main__':
     import argparse

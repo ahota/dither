@@ -1,4 +1,5 @@
 from PIL import Image
+from collections import OrderedDict
 import numpy
 import random
 import sys
@@ -15,12 +16,12 @@ DEBUGMODE = False
 default_method = 'bayer4x4'
 default_palette = 'cga_mode4_2_high'
 
-available_methods = {}
+available_methods = OrderedDict()
 
-available_methods.update(ordered_dithering._available_methods)
-available_methods.update(randomized._available_methods)
-available_methods.update(error_diffusion._available_methods)
 available_methods.update(threshold._available_methods)
+available_methods.update(randomized._available_methods)
+available_methods.update(ordered_dithering._available_methods)
+available_methods.update(error_diffusion._available_methods)
 
 def _do_work(work_args):
     image_offset, image_matrix, method, palette_name = work_args

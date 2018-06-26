@@ -1,4 +1,5 @@
 from PIL import Image
+from collections import OrderedDict
 import numpy
 import random
 import sys
@@ -29,9 +30,9 @@ def randomized(image_matrix, palette_name):
             new_matrix[x][y] = new_pixel
     return new_matrix
 
-_available_methods = {
-        'random' : randomized
-}
+_available_methods = OrderedDict([
+        ('random' , randomized),
+])
 
 if __name__ == '__main__':
     import argparse

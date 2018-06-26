@@ -1,4 +1,5 @@
 from PIL import Image
+from collections import OrderedDict
 import numpy
 import random
 import sys
@@ -74,12 +75,12 @@ def cluster_dot4x4(image_matrix, palette_name):
 def cluster_dot8x8(image_matrix, palette_name):
     return _ordered_dither(image_matrix, palette_name, _clusterdot8x8map)
 
-_available_methods = {
-        'bayer4x4' : bayer4x4,
-        'bayer8x8' : bayer8x8,
-        'cluster4x4' : cluster_dot4x4,
-        'cluster8x8' : cluster_dot8x8,
-}
+_available_methods = OrderedDict([
+        ('bayer4x4' , bayer4x4),
+        ('bayer8x8' , bayer8x8),
+        ('cluster4x4' , cluster_dot4x4),
+        ('cluster8x8' , cluster_dot8x8),
+])
 
 if __name__ == '__main__':
     import argparse
