@@ -4,6 +4,33 @@ import json,os
 palettes = OrderedDict()
 available_palettes = []
 
+def _build_c64_palettes():
+    global palettes
+
+    print 'building C64 palette'
+
+    # gamma corrected colors from
+    # http://unusedino.de/ec64/technical/misc/vic656x/colors/
+    palette = [
+            [  0.0,           0.0,           0.0        ],
+            [254.999999878, 254.999999878, 254.999999878],
+            [103.681836072,  55.445357742,  43.038096345],
+            [111.932673473, 163.520631667, 177.928819803],
+            [111.399725075,  60.720543693, 133.643433983],
+            [ 88.102223525, 140.581101312,  67.050415368],
+            [ 52.769271594,  40.296416104, 121.446211753],
+            [183.892638117, 198.676829993, 110.585717385],
+            [111.399725075,  79.245328562,  37.169652483],
+            [ 66.932804788,  57.383702891,   0.0        ],
+            [153.690586380, 102.553762644,  89.111118307],
+            [ 67.999561813,  67.999561813,  67.999561813],
+            [107.797780127, 107.797780127, 107.797780127],
+            [154.244479632, 209.771445903, 131.584994128],
+            [107.797780127,  94.106015515, 180.927622164],
+            [149.480882981, 149.480882981, 149.480882981],
+    ]
+    palettes['c64'] = [[c/255. for c in color] for color in palette]
+
 def _build_websafe_palettes():
     # note that there is only an _accepted_ set of 216 "websafe" colors, but
     # there is no fully standardized set
@@ -120,6 +147,7 @@ def _build_palettes():
     _build_cga_palettes()
     _build_ega_palettes()
     _build_websafe_palettes()
+    _build_c64_palettes()
 
     global palettes
 
