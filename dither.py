@@ -22,7 +22,17 @@ available_methods.update(randomized._available_methods)
 available_methods.update(error_diffusion._available_methods)
 available_methods.update(threshold._available_methods)
 
+def _do_work(work_args):
+    image_offset, image_matrix, method, palette_name = work_args
+
+    dither_matrix = available_methods[method](image_matrix, palette_name)
+    dither_image = utils.numpy2pil(dither_matrix)
+
+    return (image_offset, dither_image)
+
 def create_collage(image_filename):
+    from multiprocessing import Pool, cpu_count
+
     image = utils.open_image(image_filename)
     width, height = image.size
 
@@ -34,14 +44,20 @@ def create_collage(image_filename):
 
     image_matrix = utils.pil2numpy(image)
 
+    work_objects = []
+
     for p_i, p in enumerate(palette.available_palettes):
         for m_i, m in enumerate(available_methods):
-            print 'palette {:2d}/{:2d}, method {:2d}/{:2d}'.format(p_i, n_palettes, m_i, n_methods)
-            print p, m
             image_offset = (p_i * width, m_i * height)
-            dither_matrix = available_methods[m](image_matrix, p)
-            dither_image = utils.numpy2pil(dither_matrix)
-            canvas.paste(dither_image, image_offset)
+            work_objects.append( (image_offset, image_matrix, m, p) )
+
+    pool = Pool(cpu_count())
+
+    results = pool.map(_do_work, work_objects)
+
+    for r in results:
+        image_offset, dither_image = r
+        canvas.paste(dither_image, image_offset)
 
     canvas.save('collage.png')
 
