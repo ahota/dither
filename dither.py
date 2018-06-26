@@ -9,6 +9,7 @@ import utils
 import error_diffusion
 import ordered_dithering
 import randomized
+import threshold
 
 DEBUGMODE = False
 default_method = 'bayer4x4'
@@ -19,6 +20,7 @@ available_methods = {}
 available_methods.update(ordered_dithering._available_methods)
 available_methods.update(randomized._available_methods)
 available_methods.update(error_diffusion._available_methods)
+available_methods.update(threshold._available_methods)
 
 if __name__ == '__main__':
     import argparse

@@ -19,6 +19,9 @@ def threshold(image_matrix, palette_name):
             new_matrix[x][y] = new_pixel
     return new_matrix
 
+_available_methods = {
+        'threshold' : threshold
+}
 
 if __name__ == '__main__':
     import argparse
