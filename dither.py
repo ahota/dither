@@ -31,9 +31,36 @@ def _do_work(work_args):
 
     return (image_offset, dither_image)
 
+def _get_font(image_size):
+    from PIL import ImageFont
+
+    constraint = min(image_size)
+    fontnames = ['DejaVuSans.ttf', 'Arial.ttf']
+    goodname = ''
+    fontsize = 1
+
+    for fontname in fontnames:
+        try:
+            font = ImageFont.truetype(fontname, size=fontsize)
+            goodname = fontname
+            break
+        except IOError:
+            pass
+    if font is not None:
+        longest_palette_name = max(palette.available_palettes, key=len)
+        longest_method_name  = max(available_methods, key=len)
+        while font.getsize(longest_palette_name)[0] < constraint and font.getsize(longest_method_name)[0] < constraint:
+            fontsize += 1
+            font = ImageFont.truetype(goodname, size=fontsize)
+        font = ImageFont.truetype(goodname, size=max(1, fontsize-1))
+    else:
+        font = ImageFont.load_default()
+
+    return font
+
 def create_collage(image_filename):
     from multiprocessing import Pool, cpu_count
-    from PIL import ImageDraw, ImageFont
+    from PIL import ImageDraw
 
     image = utils.open_image(image_filename)
     width, height = image.size
@@ -43,8 +70,9 @@ def create_collage(image_filename):
 
     canvas_size = (width * (n_palettes + 1), height * (n_methods + 1))
     canvas = Image.new('RGB', canvas_size)
+    canvas.paste(image, (0, 0))
     drawer = ImageDraw.Draw(canvas)
-    font   = ImageFont.load_default()
+    font   = _get_font(image.size)
     font_color = (255, 255, 255, 255)
 
     image_matrix = utils.pil2numpy(image)
@@ -52,11 +80,13 @@ def create_collage(image_filename):
     work_objects = []
 
     for p_i, p in enumerate(palette.available_palettes):
-        text_pos = ((p_i + 1) * width, height / 2)
+        text_width, text_height = font.getsize(p)
+        text_pos = ((p_i + 1) * width + (width - text_width) / 2, (height - text_height) / 2)
         drawer.text(text_pos, p, font=font, fill=font_color)
         for m_i, m in enumerate(available_methods):
             if p_i == 0:
-                text_pos = (0, (m_i + 1) * height + height / 2)
+                text_width, text_height = font.getsize(m)
+                text_pos = ((width - text_width) / 2, (m_i + 1) * height + (height - text_height) / 2)
                 drawer.text(text_pos, m, font=font, fill=font_color)
             image_offset = ((p_i + 1) * width, (m_i + 1) * height)
             work_objects.append( (image_offset, image_matrix, m, p) )
