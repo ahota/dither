@@ -33,6 +33,7 @@ def _do_work(work_args):
 
 def create_collage(image_filename):
     from multiprocessing import Pool, cpu_count
+    from PIL import ImageDraw, ImageFont
 
     image = utils.open_image(image_filename)
     width, height = image.size
@@ -40,17 +41,26 @@ def create_collage(image_filename):
     n_palettes = len(palette.available_palettes)
     n_methods  = len(available_methods)
 
-    canvas_size = (width * n_palettes, height * n_methods)
+    canvas_size = (width * (n_palettes + 1), height * (n_methods + 1))
     canvas = Image.new('RGB', canvas_size)
+    drawer = ImageDraw.Draw(canvas)
+    font   = ImageFont.load_default()
+    font_color = (255, 255, 255, 255)
 
     image_matrix = utils.pil2numpy(image)
 
     work_objects = []
 
     for p_i, p in enumerate(palette.available_palettes):
+        text_pos = ((p_i + 1) * width, height / 2)
+        drawer.text(text_pos, p, font=font, fill=font_color)
         for m_i, m in enumerate(available_methods):
-            image_offset = (p_i * width, m_i * height)
+            if p_i == 0:
+                text_pos = (0, (m_i + 1) * height + height / 2)
+                drawer.text(text_pos, m, font=font, fill=font_color)
+            image_offset = ((p_i + 1) * width, (m_i + 1) * height)
             work_objects.append( (image_offset, image_matrix, m, p) )
+    del drawer
 
     pool = Pool(cpu_count())
 
@@ -61,6 +71,7 @@ def create_collage(image_filename):
         canvas.paste(dither_image, image_offset)
 
     canvas.save('collage.png')
+    canvas.show()
 
 if __name__ == '__main__':
     import argparse
