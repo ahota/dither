@@ -95,43 +95,16 @@ def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
                             new_matrix[x + ci - offset][y + di + 1] += quant_error * coeff
     return new_matrix
 
-def floyd_steinberg(image_matrix, palette_name):
-    return _error_diffusion(image_matrix, palette_name, _floyd_steinberg_diffusion_matrix)
-
-def jajuni(image_matrix, palette_name):
-    return _error_diffusion(image_matrix, palette_name, _jajuni_diffusion_matrix)
-
-def fan(image_matrix, palette_name):
-    return _error_diffusion(image_matrix, palette_name, _fan_diffusion_matrix)
-
-def stucki(image_matrix, palette_name):
-    return _error_diffusion(image_matrix, palette_name, _stucki_diffusion_matrix)
-
-def burkes(image_matrix, palette_name):
-    return _error_diffusion(image_matrix, palette_name, _burkes_diffusion_matrix)
-
-def sierra(image_matrix, palette_name):
-    return _error_diffusion(image_matrix, palette_name, _sierra_diffusion_matrix)
-
-def two_row_sierra(image_matrix, palette_name):
-    return _error_diffusion(image_matrix, palette_name, _two_row_sierra_diffusion_matrix)
-
-def sierra_lite(image_matrix, palette_name):
-    return _error_diffusion(image_matrix, palette_name, _sierra_lite_diffusion_matrix)
-
-def atkinson(image_matrix, palette_name):
-    return _error_diffusion(image_matrix, palette_name, _atkinson_diffusion_matrix)
-
 _available_methods = OrderedDict([
-        ('floyd_steinberg' , floyd_steinberg),
-        ('jajuni' , jajuni),
-        ('fan' , fan),
-        ('stucki' , stucki),
-        ('burkes' , burkes),
-        ('sierra' , sierra),
-        ('two_row_sierra' , two_row_sierra),
-        ('sierra_lite' , sierra_lite),
-        ('atkinson' , atkinson),
+        ('floyd_steinberg' , lambda im, pal: _error_diffusion(im, pal, _floyd_steinberg_diffusion_matrix)),
+        ('jajuni' , lambda im, pal: _error_diffusion(im, pal, _jajuni_diffusion_matrix)),
+        ('fan' , lambda im, pal: _error_diffusion(im, pal, _fan_diffusion_matrix)),
+        ('stucki' , lambda im, pal: _error_diffusion(im, pal, _stucki_diffusion_matrix)),
+        ('burkes' , lambda im, pal: _error_diffusion(im, pal, _burkes_diffusion_matrix)),
+        ('sierra' , lambda im, pal: _error_diffusion(im, pal, _sierra_diffusion_matrix)),
+        ('two_row_sierra' , lambda im, pal: _error_diffusion(im, pal, _two_row_sierra_diffusion_matrix)),
+        ('sierra_lite' , lambda im, pal: _error_diffusion(im, pal, _sierra_lite_diffusion_matrix)),
+        ('atkinson' , lambda im, pal: _error_diffusion(im, pal, _atkinson_diffusion_matrix)),
 ])
 
 if __name__ == '__main__':
