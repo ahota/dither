@@ -53,6 +53,7 @@ _diffusion_matrices = {
 }
 
 def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
+    print diffusion_matrix
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
     for y in range(rows):
@@ -93,7 +94,7 @@ _method_names = [
         'sierra', 'two_row_sierra', 'sierra_lite', 'atkinson'
 ]
 _available_methods = OrderedDict(
-        [(mn, lambda im, pal: _error_diffusion(im, pal, _diffusion_matrices[mn])) for mn in _method_names]
+        [(mn, (lambda name: (lambda im, pal: _error_diffusion(im, pal, _diffusion_matrices[name])))(mn)) for mn in _method_names]
 )
 
 if __name__ == '__main__':
