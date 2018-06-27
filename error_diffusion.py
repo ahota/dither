@@ -37,6 +37,22 @@ _burkes_diffusion_matrix = numpy.array([
     [.0625,.125,.25,.125,.0625]
 ])
 
+_sierra_diffusion_matrix = numpy.array([
+    [5./32,3./32],
+    [1./16,1./8,5./32,1./8,1./16],
+    [1./16,3./32,1./16]
+])
+
+_two_row_sierra_diffusion_matrix = numpy.array([
+    [1./4,3./16],
+    [1./16,1./8,3./16,1./8,1./16]
+])
+
+_sierra_lite_diffusion_matrix = numpy.array([
+    [0.5],
+    [0.25,0.25,0]
+])
+
 def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
@@ -88,12 +104,24 @@ def stucki(image_matrix, palette_name):
 def burkes(image_matrix, palette_name):
     return _error_diffusion(image_matrix, palette_name, _burkes_diffusion_matrix)
 
+def sierra(image_matrix, palette_name):
+    return _error_diffusion(image_matrix, palette_name, _sierra_diffusion_matrix)
+
+def two_row_sierra(image_matrix, palette_name):
+    return _error_diffusion(image_matrix, palette_name, _two_row_sierra_diffusion_matrix)
+
+def sierra_lite(image_matrix, palette_name):
+    return _error_diffusion(image_matrix, palette_name, _sierra_lite_diffusion_matrix)
+
 _available_methods = OrderedDict([
         ('floyd_steinberg' , floyd_steinberg),
         ('jajuni' , jajuni),
         ('fan' , fan),
         ('stucki' , stucki),
         ('burkes' , burkes),
+        ('sierra' , sierra),
+        ('two_row_sierra' , two_row_sierra),
+        ('sierra_lite' , sierra_lite),
 ])
 
 if __name__ == '__main__':
