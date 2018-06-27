@@ -53,6 +53,12 @@ _sierra_lite_diffusion_matrix = numpy.array([
     [0.25,0.25,0]
 ])
 
+_atkinson_diffusion_matrix = numpy.array([
+    [0.125,0.125],
+    [0.125,0.125,0.125],
+    [0.125]
+])
+
 def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
@@ -113,6 +119,9 @@ def two_row_sierra(image_matrix, palette_name):
 def sierra_lite(image_matrix, palette_name):
     return _error_diffusion(image_matrix, palette_name, _sierra_lite_diffusion_matrix)
 
+def atkinson(image_matrix, palette_name):
+    return _error_diffusion(image_matrix, palette_name, _atkinson_diffusion_matrix)
+
 _available_methods = OrderedDict([
         ('floyd_steinberg' , floyd_steinberg),
         ('jajuni' , jajuni),
@@ -122,6 +131,7 @@ _available_methods = OrderedDict([
         ('sierra' , sierra),
         ('two_row_sierra' , two_row_sierra),
         ('sierra_lite' , sierra_lite),
+        ('atkinson' , atkinson),
 ])
 
 if __name__ == '__main__':
