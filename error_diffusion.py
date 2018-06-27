@@ -9,55 +9,48 @@ import utils
 DEBUGMODE = False
 default_palette = 'cga_mode_4_2_hi'
 
-_floyd_steinberg_diffusion_matrix = numpy.array([
-    [7./16],
-    [3./16,5./16,1./16]
-])
-
-_jajuni_diffusion_matrix = numpy.array([
-    [7./48,5./48],
-    [1./16,5./48,7./48,5./48,1./16],
-    [1./48,1./16,5./48,1./16,1./48]
-])
-
-# zeros are used to pad asymmetric downward diffusion rows
-_fan_diffusion_matrix = numpy.array([
-    [7./16],
-    [1./16,3./16,5./16,0.,0.]
-])
-
-_stucki_diffusion_matrix = numpy.array([
-    [4./21,2./21],
-    [1./21,2./21,4./21,2./21,1./21],
-    [1./42,1./21,2./21,1./21,1./42]
-])
-
-_burkes_diffusion_matrix = numpy.array([
-    [.25,.125],
-    [.0625,.125,.25,.125,.0625]
-])
-
-_sierra_diffusion_matrix = numpy.array([
-    [5./32,3./32],
-    [1./16,1./8,5./32,1./8,1./16],
-    [1./16,3./32,1./16]
-])
-
-_two_row_sierra_diffusion_matrix = numpy.array([
-    [1./4,3./16],
-    [1./16,1./8,3./16,1./8,1./16]
-])
-
-_sierra_lite_diffusion_matrix = numpy.array([
-    [0.5],
-    [0.25,0.25,0]
-])
-
-_atkinson_diffusion_matrix = numpy.array([
-    [0.125,0.125],
-    [0.125,0.125,0.125],
-    [0.125]
-])
+_diffusion_matrices = {
+        'floyd_steinberg' : numpy.array([
+            [7./16],
+            [3./16,5./16,1./16]
+        ]),
+        'jajuni' : numpy.array([
+            [7./48,5./48],
+            [1./16,5./48,7./48,5./48,1./16],
+            [1./48,1./16,5./48,1./16,1./48]
+        ]),
+        'fan' : numpy.array([
+            [7./16],
+            [1./16,3./16,5./16,0.,0.]
+        ]),
+        'stucki' : numpy.array([
+            [4./21,2./21],
+            [1./21,2./21,4./21,2./21,1./21],
+            [1./42,1./21,2./21,1./21,1./42]
+        ]),
+        'burkes' : numpy.array([
+            [.25,.125],
+            [.0625,.125,.25,.125,.0625]
+        ]),
+        'sierra' : numpy.array([
+            [5./32,3./32],
+            [1./16,1./8,5./32,1./8,1./16],
+            [1./16,3./32,1./16]
+        ]),
+        'two_row_sierra' : numpy.array([
+            [1./4,3./16],
+            [1./16,1./8,3./16,1./8,1./16]
+        ]),
+        'sierra_lite' : numpy.array([
+            [0.5],
+            [0.25,0.25,0]
+        ]),
+        'atkinson' : numpy.array([
+            [0.125,0.125],
+            [0.125,0.125,0.125],
+            [0.125]
+        ]),
+}
 
 def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
     new_matrix = numpy.copy(image_matrix)
@@ -95,17 +88,13 @@ def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
                             new_matrix[x + ci - offset][y + di + 1] += quant_error * coeff
     return new_matrix
 
-_available_methods = OrderedDict([
-        ('floyd_steinberg' , lambda im, pal: _error_diffusion(im, pal, _floyd_steinberg_diffusion_matrix)),
-        ('jajuni' , lambda im, pal: _error_diffusion(im, pal, _jajuni_diffusion_matrix)),
-        ('fan' , lambda im, pal: _error_diffusion(im, pal, _fan_diffusion_matrix)),
-        ('stucki' , lambda im, pal: _error_diffusion(im, pal, _stucki_diffusion_matrix)),
-        ('burkes' , lambda im, pal: _error_diffusion(im, pal, _burkes_diffusion_matrix)),
-        ('sierra' , lambda im, pal: _error_diffusion(im, pal, _sierra_diffusion_matrix)),
-        ('two_row_sierra' , lambda im, pal: _error_diffusion(im, pal, _two_row_sierra_diffusion_matrix)),
-        ('sierra_lite' , lambda im, pal: _error_diffusion(im, pal, _sierra_lite_diffusion_matrix)),
-        ('atkinson' , lambda im, pal: _error_diffusion(im, pal, _atkinson_diffusion_matrix)),
-])
+_method_names = [
+        'floyd_steinberg', 'jajuni', 'fan', 'stucki', 'burkes',
+        'sierra', 'two_row_sierra', 'sierra_lite', 'atkinson'
+]
+_available_methods = OrderedDict(
+        [(mn, lambda im, pal: _error_diffusion(im, pal, _diffusion_matrices[mn])) for mn in _method_names]
+)
 
 if __name__ == '__main__':
     import argparse
