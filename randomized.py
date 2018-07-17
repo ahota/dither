@@ -10,6 +10,27 @@ import utils
 DEBUGMODE = False
 default_palette = 'cga_mode_4_2_hi'
 
+def block_randomized(image_matrix, palette_name):
+    new_matrix = numpy.copy(image_matrix)
+    cols, rows, depth = image_matrix.shape
+    
+    block_width, block_height = (max(1, cols/50), max(1, rows/50))
+
+    for by in range(0, rows, block_height):
+        for bx in range(0, cols, block_width):
+            block = new_matrix[bx:bx+block_width,by:by+block_height,:]
+            avg_color = numpy.sum(block, axis=(0,1))/(block_width*block_height)
+            for y in range(block_height):
+                for x in range(block_width):
+                    ar, ag, ab = avg_color
+                    ar = utils.clamp(ar + random.gauss(0.0, 1./6.))
+                    ab = utils.clamp(ag + random.gauss(0.0, 1./6.))
+                    ag = utils.clamp(ab + random.gauss(0.0, 1./6.))
+                    new_pixel = numpy.array(utils.closest_palette_color([ar, ag, ab],
+                        palette_name), dtype=numpy.float)
+                    new_matrix[bx+x][by+y] = new_pixel
+    return new_matrix
+
 def randomized(image_matrix, palette_name):
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
@@ -32,6 +53,7 @@ def randomized(image_matrix, palette_name):
 
 _available_methods = OrderedDict([
         ('random' , randomized),
+        ('block_random' , block_randomized),
 ])
 
 if __name__ == '__main__':
