@@ -53,7 +53,6 @@ _diffusion_matrices = {
 }
 
 def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
-    print diffusion_matrix
     new_matrix = numpy.copy(image_matrix)
     cols, rows, depth = image_matrix.shape
     for y in range(rows):
