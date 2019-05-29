@@ -111,8 +111,10 @@ if __name__ == '__main__':
     palette_help_str = 'Name of palette to use. Can be one of: ' + ', '.join(palette.available_palettes)
     method_help_str = 'Method to use. Can be one of: ' + ', '.join(available_methods)
     all_help_str = 'Create a collage using all palettes and all dithering methods'
+    output_help_str = 'Output the dithered image to a file'
     parser.add_argument('-p', '--palette', type=str, default=default_palette, help=palette_help_str)
     parser.add_argument('-m', '--method', type=str, default=default_method, help=method_help_str)
+    parser.add_argument('-o', '--output', type=str, default='', help=output_help_str)
     parser.add_argument('-a', '--all', action='store_true', help=all_help_str)
     args = parser.parse_args()
 
@@ -125,5 +127,8 @@ if __name__ == '__main__':
         dither_matrix = available_methods[args.method](image_matrix, args.palette)
         dither_image = utils.numpy2pil(dither_matrix)
 
-        dither_image.show()
+        if args.output == '':
+            dither_image.show()
+        else:
+            dither_image.save(args.output)
 
