@@ -25,7 +25,7 @@ def clamp(val):
 
 def closest_palette_color(value, palette_name, bit_depth=1):
     if DEBUGMODE:
-        print '\tvalue = {}'.format(value)
+        print('\tvalue = {value}')
 
     # compute distance to colors in palette
     # TODO make this naive method more sophisticated
@@ -37,8 +37,8 @@ def closest_palette_color(value, palette_name, bit_depth=1):
         dist = math.sqrt((vr-pr)*(vr-pr)+(vg-pg)*(vg-pg)+(vb-pb)*(vb-pb))
 
         if DEBUGMODE:
-            print '\tcolor = {}'.format(color)
-            print '\tdist = {}, min_dist = {}'.format(dist, min_dist)
+            print('\tcolor = {color}')
+            print('\tdist = {dist}, min_dist = {min_dist}')
 
         if dist < min_dist:
             ci_use = ci

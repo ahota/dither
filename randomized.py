@@ -37,8 +37,8 @@ def randomized(image_matrix, palette_name):
     for y in range(rows):
         for x in range(cols):
             if DEBUGMODE:
-                print '<{}, {}>'.format(x, y)
-                print 'old = {}'.format(new_matrix[x][y])
+                print(f'<{x}, {y}>')
+                print(f'old = {new_matrix[{x}][{y}]}')
 
             old_pixel = numpy.array(new_matrix[x][y], dtype=numpy.float)
             opr, opg, opb = old_pixel

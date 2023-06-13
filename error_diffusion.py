@@ -58,8 +58,8 @@ def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
     for y in range(rows):
         for x in range(cols):
             if DEBUGMODE:
-                print '<{}, {}>'.format(x, y)
-                print 'old = {}'.format(new_matrix[x][y])
+                print(f'<{x}, {y}>')
+                print(f'old = {new_matrix[{x}][{y}]}')
 
             # calculate the new pixel value
             old_pixel = numpy.array(new_matrix[x][y], dtype=numpy.float)
@@ -70,9 +70,9 @@ def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
             quant_error = old_pixel - new_pixel
 
             if DEBUGMODE:
-                print 'new = {}'.format(new_pixel)
-                print 'quant = {}'.format(quant_error)
-                print '-'*20
+                print('new = {new_pixel}')
+                print('quant = {quant_error}')
+                print('-'*20)
                 if x > 5:
                     sys.exit()
 

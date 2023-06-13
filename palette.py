@@ -7,7 +7,7 @@ available_palettes = []
 def _build_c64_palettes():
     global palettes
 
-    print 'building C64 palette'
+    print('building C64 palette')
 
     # gamma corrected colors from
     # http://unusedino.de/ec64/technical/misc/vic656x/colors/
@@ -38,7 +38,7 @@ def _build_websafe_palettes():
 
     global palettes
 
-    print 'building websafe palette'
+    print('building websafe palette')
 
     palette = []
     for r in range(6):
@@ -50,16 +50,14 @@ def _build_websafe_palettes():
 def _build_grayscale_palettes():
     global palettes
 
-    print 'building grayscale palettes'
+    print('building grayscale palettes')
 
     for bit_depth in range(1, 8):
         levels = 2**bit_depth - 1
-        #print '\tbit depth = {}, levels = {}'.format(bit_depth, levels)
         pname = '{}bit_gray'.format(bit_depth)
         palette = [ [0.0, 0.0, 0.0] ]
         for l in range(levels):
             val = float(l+1)/(levels)
-            #print '\tl = {}, val = {}'.format(l, val)
             palette.append([val, val, val])
         palettes[pname] = palette
 
@@ -69,7 +67,7 @@ def _build_cga_palettes():
 
     global palettes
 
-    print 'building cga palettes'
+    print('building cga palettes')
 
     # generate all the low/dark colors
     low = []
@@ -119,7 +117,7 @@ def _build_cga_palettes():
 def _build_ega_palettes():
     global palettes
 
-    print 'building ega palettes'
+    print('building ega palettes')
 
     # generate all the low/dark colors
     low = []
@@ -142,7 +140,7 @@ def _build_ega_palettes():
     palettes['ega_default'] = low + high # how convenient
 
 def _build_palettes():
-    print 'building palettes'
+    print('building palettes')
     _build_grayscale_palettes()
     _build_cga_palettes()
     _build_ega_palettes()
@@ -176,7 +174,7 @@ else:
     _build_palettes()
 
 if __name__ == '__main__':
-    print available_palettes
+    print(available_palettes)
 
     from PIL import Image, ImageDraw
 
