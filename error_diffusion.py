@@ -13,43 +13,43 @@ _diffusion_matrices = {
         'floyd_steinberg' : numpy.array([
             [7./16],
             [3./16,5./16,1./16]
-        ]),
+        ], dtype=object),
         'jajuni' : numpy.array([
             [7./48,5./48],
             [1./16,5./48,7./48,5./48,1./16],
             [1./48,1./16,5./48,1./16,1./48]
-        ]),
+        ], dtype=object),
         'fan' : numpy.array([
             [7./16],
             [1./16,3./16,5./16,0.,0.]
-        ]),
+        ], dtype=object),
         'stucki' : numpy.array([
             [4./21,2./21],
             [1./21,2./21,4./21,2./21,1./21],
             [1./42,1./21,2./21,1./21,1./42]
-        ]),
+        ], dtype=object),
         'burkes' : numpy.array([
             [.25,.125],
             [.0625,.125,.25,.125,.0625]
-        ]),
+        ], dtype=object),
         'sierra' : numpy.array([
             [5./32,3./32],
             [1./16,1./8,5./32,1./8,1./16],
             [1./16,3./32,1./16]
-        ]),
+        ], dtype=object),
         'two_row_sierra' : numpy.array([
             [1./4,3./16],
             [1./16,1./8,3./16,1./8,1./16]
-        ]),
+        ], dtype=object),
         'sierra_lite' : numpy.array([
             [0.5],
             [0.25,0.25,0]
-        ]),
+        ], dtype=object),
         'atkinson' : numpy.array([
             [0.125,0.125],
             [0.125,0.125,0.125],
             [0.125]
-        ]),
+        ], dtype=object)
 }
 
 def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
