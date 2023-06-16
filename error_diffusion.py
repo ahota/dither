@@ -82,7 +82,7 @@ def _error_diffusion(image_matrix, palette_name, diffusion_matrix):
                     new_matrix[x + (ci + 1)][y] += quant_error * coeff
             for di, downward_diffusion in enumerate(diffusion_matrix[1:]):
                 if y + di + 1 < rows:
-                    offset = len(downward_diffusion) / 2
+                    offset = int(len(downward_diffusion) / 2)
                     for ci, coeff in enumerate(downward_diffusion):
                         if 0 <= x + ci - offset < cols:
                             new_matrix[x + ci - offset][y + di + 1] += quant_error * coeff
